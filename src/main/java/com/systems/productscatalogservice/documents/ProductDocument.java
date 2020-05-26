@@ -9,6 +9,7 @@ public class ProductDocument {
     private String productId;
     private String productName;
     private Double productPrice;
+    private String image;
 
     public ProductDocument(){}
 
@@ -34,5 +35,13 @@ public class ProductDocument {
 
     public void setProductPrice(Double productPrice) {
         this.productPrice = productPrice;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

@@ -1,10 +1,11 @@
 package com.systems.productscatalogservice.services.impl;
 
+import com.systems.productscatalogservice.commons.ResponseEntity;
 import com.systems.productscatalogservice.documents.ProductDocument;
+import com.systems.productscatalogservice.dtos.Product;
 import com.systems.productscatalogservice.repository.ProductRepository;
 import com.systems.productscatalogservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +19,19 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseEntity<List<ProductDocument>> getAllProducts() {
         List<ProductDocument> products = productRepository.findAll();
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(products, "Products retrieved successfully");
     }
 
     @Override
-    public ResponseEntity<ProductDocument> getProductById(String productId) {
-        Optional<ProductDocument> product = productRepository.findById(productId);
-        return ResponseEntity.ok(product.get());
+    public ResponseEntity<Product> getProductById(String productId) {
+        Optional<ProductDocument> productDocument = productRepository.findById(productId);
+        Product productResponse = new Product();
+        if(productDocument.isPresent()){
+            ProductDocument product = productDocument.get();
+            productResponse.setProductId(product.getProductId());
+            productResponse.setProductName(product.getProductName());
+            productResponse.setProductPrice(product.getProductPrice());
+        }
+        return ResponseEntity.ok(productResponse, "Product retrieved successfully");
     }
 }

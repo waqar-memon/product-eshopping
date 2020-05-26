@@ -1,18 +1,16 @@
 package com.systems.productscatalogservice.controllers;
 
+import com.systems.productscatalogservice.commons.ResponseEntity;
 import com.systems.productscatalogservice.documents.ProductDocument;
 import com.systems.productscatalogservice.dtos.Product;
 import com.systems.productscatalogservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/products")
 public class ProductsCatalogController {
@@ -20,13 +18,17 @@ public class ProductsCatalogController {
     private ProductService productService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<List<ProductDocument>> getAllProducts(){
+    public ResponseEntity<List<ProductDocument>> getAllProducts(HttpServletResponse httpServletResponse){
         ResponseEntity<List<ProductDocument>> allProducts = productService.getAllProducts();
+        httpServletResponse.addHeader("Access-Control-Allow-Methods", "GET");
+        httpServletResponse.addHeader("Access-Control-Allow-Headers", "accept, content-type");
+        httpServletResponse.addHeader("Access-Control-Allow-Credentials", "true");
+
         return allProducts;
     }
 
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET)
-    public ResponseEntity<ProductDocument> getProductById(@PathVariable("productId") String productId){
+    public ResponseEntity<Product> getProductById(@PathVariable("productId") String productId){
         return productService.getProductById(productId);
     }
 }
