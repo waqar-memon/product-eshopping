@@ -14,7 +14,9 @@ public class CustomerOrderDocument {
     private ShipmentInformation shipmentInformation;
     private Timestamp createDateTime;
 
-    public CustomerOrderDocument(){}
+    public CustomerOrderDocument(){
+        //Default constructor for ORM
+    }
 
     public String getId() {
         return id;

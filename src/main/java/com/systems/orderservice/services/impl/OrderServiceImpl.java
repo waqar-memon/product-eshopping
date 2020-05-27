@@ -9,6 +9,7 @@ import com.systems.orderservice.repositories.CustomerOrderRepository;
 import com.systems.orderservice.repositories.ProductOrderRepository;
 import com.systems.orderservice.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductOrderRepository productOrderRepository;
 
+    @Value("${customer.service.url}")
+    private String customerServicePath;
+
+    @Value("${products.catalog.service.url}")
+    private String productsCatalogServicePath;
+
     @Override
     public ResponseEntity<AddOrderResponse> addOrder(AddOrderRequest addOrderRequest) {
         AddOrderResponse addOrderResponse = new AddOrderResponse();
@@ -32,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
         // get Customer by customerId
         ParameterizedTypeReference<ResponseEntity<Customer>> customerResponseType = new ParameterizedTypeReference<ResponseEntity<Customer>>() {};
         org.springframework.http.ResponseEntity<ResponseEntity<Customer>> customerDocument = restTemplate.exchange(
-                "http://localhost:8082/customers/" + addOrderRequest.getCustomer().getId(),
+                customerServicePath + addOrderRequest.getCustomer().getId(),
                 HttpMethod.GET,
                 null,
                 customerResponseType
@@ -58,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
                 //get Product by productId
                 ParameterizedTypeReference<ResponseEntity<Product>> responseType = new ParameterizedTypeReference<ResponseEntity<Product>>() {};
                 org.springframework.http.ResponseEntity<ResponseEntity<Product>> productDocument = restTemplate.exchange(
-                        "http://localhost:8081/products/" + product.getId(),
+                        productsCatalogServicePath + product.getId(),
                         HttpMethod.GET,
                         null,
                         responseType

@@ -14,7 +14,9 @@ public class ProductOrderDocument {
     private Integer quantity;
     private Double subTotal;
 
-    public ProductOrderDocument(){}
+    public ProductOrderDocument(){
+        //Default constructor for ORM
+    }
 
     public String getId() {
         return id;
