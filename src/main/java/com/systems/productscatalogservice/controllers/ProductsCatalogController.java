@@ -17,7 +17,7 @@ public class ProductsCatalogController {
     @Autowired
     private ProductService productService;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping
     public ResponseEntity<List<ProductDocument>> getAllProducts(HttpServletResponse httpServletResponse){
         ResponseEntity<List<ProductDocument>> allProducts = productService.getAllProducts();
         httpServletResponse.addHeader("Access-Control-Allow-Methods", "GET");
@@ -27,7 +27,7 @@ public class ProductsCatalogController {
         return allProducts;
     }
 
-    @RequestMapping(value = "/{productId}", method = RequestMethod.GET)
+    @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable("productId") String productId){
         return productService.getProductById(productId);
     }

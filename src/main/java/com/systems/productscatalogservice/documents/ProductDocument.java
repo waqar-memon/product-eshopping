@@ -11,7 +11,9 @@ public class ProductDocument {
     private Double productPrice;
     private String image;
 
-    public ProductDocument(){}
+    public ProductDocument(){
+        //Default constructor for ORM
+    }
 
     public String getProductId() {
         return productId;
