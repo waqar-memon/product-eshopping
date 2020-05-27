@@ -11,7 +11,9 @@ public class CustomerAddressDocument {
     private String city;
     private String address;
 
-    public CustomerAddressDocument(){}
+    public CustomerAddressDocument(){
+        //Default constructor for ORM
+    }
 
     public String getId() {
         return id;

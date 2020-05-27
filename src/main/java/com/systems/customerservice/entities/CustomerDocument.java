@@ -1,10 +1,7 @@
 package com.systems.customerservice.entities;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 @Document(collection = "customers")
 public class CustomerDocument {
@@ -18,11 +15,10 @@ public class CustomerDocument {
     private String country;
     private String city;
     private String address;
-//    @DBRef
-//    private List<CustomerContactDocument> contactDetails;
-//    private List<CustomerAddressDocument> addressDetails;
 
-    public CustomerDocument(){}
+    public CustomerDocument(){
+        //Default constructor for ORM
+    }
 
     public String getId() {
         return id;
@@ -95,20 +91,4 @@ public class CustomerDocument {
     public void setAddress(String address) {
         this.address = address;
     }
-
-    //    public List<CustomerContactDocument> getContactDetails() {
-//        return contactDetails;
-//    }
-//
-//    public void setContactDetails(List<CustomerContactDocument> contactDetails) {
-//        this.contactDetails = contactDetails;
-//    }
-//
-//    public List<CustomerAddressDocument> getAddressDetails() {
-//        return addressDetails;
-//    }
-//
-//    public void setAddressDetails(List<CustomerAddressDocument> addressDetails) {
-//        this.addressDetails = addressDetails;
-//    }
 }

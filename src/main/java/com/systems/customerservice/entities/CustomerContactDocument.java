@@ -10,7 +10,9 @@ public class CustomerContactDocument {
     private String mobile;
     private String landline;
 
-    public CustomerContactDocument(){}
+    public CustomerContactDocument(){
+        //Default constructor for ORM
+    }
 
     public String getId() {
         return id;
