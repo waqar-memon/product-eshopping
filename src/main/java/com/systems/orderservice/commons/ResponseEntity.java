@@ -27,6 +27,13 @@ public class ResponseEntity<T> {
         return responseEntity;
     }
 
+    public static <T> ResponseEntity<T> bad(T data, String message){
+        ResponseEntity<T> responseEntity = new ResponseEntity<>();
+        responseEntity.setData(data);
+        responseEntity.setMessage(responseEntity.new Message(message, "ERROR", "400"));
+        return responseEntity;
+    }
+
     public class Message{
         private String message;
         private String code;

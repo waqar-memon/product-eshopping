@@ -34,54 +34,64 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<AddOrderResponse> addOrder(AddOrderRequest addOrderRequest) {
+        ResponseEntity<AddOrderResponse> responseEntity = null;
         AddOrderResponse addOrderResponse = new AddOrderResponse();
 
         // get Customer by customerId
-        ParameterizedTypeReference<ResponseEntity<Customer>> customerResponseType = new ParameterizedTypeReference<ResponseEntity<Customer>>() {};
-        org.springframework.http.ResponseEntity<ResponseEntity<Customer>> customerDocument = restTemplate.exchange(
-                customerServicePath + addOrderRequest.getCustomer().getId(),
-                HttpMethod.GET,
-                null,
-                customerResponseType
-        );
+        if(!ObjectUtils.isNull(addOrderRequest.getCustomer())
+                && (!ObjectUtils.isNull(addOrderRequest.getProducts()) && !addOrderRequest.getProducts().isEmpty() )){
 
-        if(!ObjectUtils.isNull(customerDocument.getBody().getData())){
-            //set Shipment Information
-            ShipmentInformation shipmentInformation = new ShipmentInformation();
-            shipmentInformation.setMobile(addOrderRequest.getCustomer().getMobile());
-            shipmentInformation.setLandline(addOrderRequest.getCustomer().getLandline());
-            shipmentInformation.setCountry(addOrderRequest.getCustomer().getCountry());
-            shipmentInformation.setCity(addOrderRequest.getCustomer().getCity());
-            shipmentInformation.setAddress(addOrderRequest.getCustomer().getAddress());
+            ParameterizedTypeReference<ResponseEntity<Customer>> customerResponseType = new ParameterizedTypeReference<ResponseEntity<Customer>>() {};
+            org.springframework.http.ResponseEntity<ResponseEntity<Customer>> customerDocument = restTemplate.exchange(
+                    customerServicePath + addOrderRequest.getCustomer().getId(),
+                    HttpMethod.GET,
+                    null,
+                    customerResponseType
+            );
 
-            //save CustomerOrder document
-            CustomerOrderDocument customerOrderDocument = new CustomerOrderDocument();
-            customerOrderDocument.setCustomerId(customerDocument.getBody().getData().getId());
-            customerOrderDocument.setShipmentInformation(shipmentInformation);
-            customerOrderDocument.setCreateDateTime(new Timestamp(System.currentTimeMillis()));
-            customerOrderDocument = customerOrderRepository.save(customerOrderDocument);
+            if(!ObjectUtils.isNull(customerDocument.getBody().getData()) && customerDocument.getBody().getMessage().getStatus().equals("200")){
+                //set Shipment Information
+                ShipmentInformation shipmentInformation = new ShipmentInformation();
+                shipmentInformation.setMobile(addOrderRequest.getCustomer().getMobile());
+                shipmentInformation.setLandline(addOrderRequest.getCustomer().getLandline());
+                shipmentInformation.setCountry(addOrderRequest.getCustomer().getCountry());
+                shipmentInformation.setCity(addOrderRequest.getCustomer().getCity());
+                shipmentInformation.setAddress(addOrderRequest.getCustomer().getAddress());
 
-            for(AddOrderRequest.Product product : addOrderRequest.getProducts()){
-                //get Product by productId
-                ParameterizedTypeReference<ResponseEntity<Product>> responseType = new ParameterizedTypeReference<ResponseEntity<Product>>() {};
-                org.springframework.http.ResponseEntity<ResponseEntity<Product>> productDocument = restTemplate.exchange(
-                        productsCatalogServicePath + product.getId(),
-                        HttpMethod.GET,
-                        null,
-                        responseType
-                );
-                if(!ObjectUtils.isNull(productDocument)){
-                    ProductOrderDocument productOrderDocument = new ProductOrderDocument();
-                    productOrderDocument.setCustomerOrderId(customerOrderDocument);
-                    productOrderDocument.setProductId(productDocument.getBody().getData().getProductId());
-                    productOrderDocument.setQuantity(product.getQuantity());
-                    productOrderDocument.setSubTotal(product.getQuantity()*productDocument.getBody().getData().getProductPrice());
-                    productOrderRepository.save(productOrderDocument);
+                //save CustomerOrder document
+                CustomerOrderDocument customerOrderDocument = new CustomerOrderDocument();
+                customerOrderDocument.setCustomerId(customerDocument.getBody().getData().getId());
+                customerOrderDocument.setShipmentInformation(shipmentInformation);
+                customerOrderDocument.setCreateDateTime(new Timestamp(System.currentTimeMillis()));
+                customerOrderDocument = customerOrderRepository.save(customerOrderDocument);
+
+                for(AddOrderRequest.Product product : addOrderRequest.getProducts()){
+                    //get Product by productId
+                    ParameterizedTypeReference<ResponseEntity<Product>> responseType = new ParameterizedTypeReference<ResponseEntity<Product>>() {};
+                    org.springframework.http.ResponseEntity<ResponseEntity<Product>> productDocument = restTemplate.exchange(
+                            productsCatalogServicePath + product.getId(),
+                            HttpMethod.GET,
+                            null,
+                            responseType
+                    );
+                    if(!ObjectUtils.isNull(productDocument)){
+                        ProductOrderDocument productOrderDocument = new ProductOrderDocument();
+                        productOrderDocument.setCustomerOrderId(customerOrderDocument);
+                        productOrderDocument.setProductId(productDocument.getBody().getData().getProductId());
+                        productOrderDocument.setQuantity(product.getQuantity());
+                        productOrderDocument.setSubTotal(product.getQuantity()*productDocument.getBody().getData().getProductPrice());
+                        productOrderRepository.save(productOrderDocument);
+                    }
                 }
-            }
 
-            addOrderResponse.setOrderId(customerOrderDocument.getId());
+                addOrderResponse.setOrderId(customerOrderDocument.getId());
+                responseEntity = ResponseEntity.ok(addOrderResponse, "Your order has been received.");
+            }else{
+                responseEntity = ResponseEntity.bad(addOrderResponse, "No such customer exist with provided ID.");
+            }
+        }else{
+            responseEntity = ResponseEntity.bad(addOrderResponse, "Invalid request body.");
         }
-        return ResponseEntity.ok(addOrderResponse, "Your order has been received.");
+        return responseEntity;
     }
 }
