@@ -14,26 +14,9 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
-//    @Autowired
-//    private CustomerContactRepository customerContactRepository;
-//    @Autowired
-//    private CustomerAddressRepository customerAddressRepository;
 
     @Override
     public ResponseEntity<Customer> addCustomer(Customer customer) {
-//        //save customer contact details
-//        CustomerContactDocument customerContactDocument = new CustomerContactDocument();
-//        customerContactDocument.setMobile(addCustomer.getMobile());
-//        customerContactDocument.setLandline(addCustomer.getLandline());
-//        customerContactDocument = customerContactRepository.save(customerContactDocument);
-//
-//        //save address details
-//        CustomerAddressDocument customerAddressDocument = new CustomerAddressDocument();
-//        customerAddressDocument.setCountry(addCustomer.getCountry());
-//        customerAddressDocument.setCity(addCustomer.getCity());
-//        customerAddressDocument.setAddress(addCustomer.getAddress());
-//        customerAddressDocument = customerAddressRepository.save(customerAddressDocument);
-
         CustomerDocument customerDocument = new CustomerDocument();
         customerDocument.setName(customer.getName());
         customerDocument.setEmail(customer.getEmail());
@@ -43,8 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerDocument.setCountry(customer.getCountry());
         customerDocument.setCity(customer.getCity());
         customerDocument.setAddress(customer.getAddress());
-//        customerDocument.setContactDetails(Collections.singletonList(customerContactDocument));
-//        customerDocument.setAddressDetails(Collections.singletonList(customerAddressDocument));
+
         customerDocument = customerRepository.save(customerDocument);
         customer.setId(customerDocument.getId());
         return ResponseEntity.ok(customer,"Customer Added Successfully");
@@ -52,6 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public ResponseEntity<Customer> getCustomerById(String customerId) {
+        ResponseEntity<Customer> responseEntity = null;
         Optional<CustomerDocument> customerDocument = customerRepository.findById(customerId);
         Customer customerResponse = new Customer();
         if(customerDocument.isPresent()){
@@ -64,8 +47,12 @@ public class CustomerServiceImpl implements CustomerService {
             customerResponse.setCountry(customer.getCountry());
             customerResponse.setCity(customer.getCity());
             customerResponse.setAddress(customer.getAddress());
+
+            responseEntity = ResponseEntity.ok(customerResponse, "Customer retrieved successfully");
+        }else{
+            responseEntity = ResponseEntity.bad(customerResponse, "No such customer exist with provided ID.");
         }
-        return ResponseEntity.ok(customerResponse, "Customer retrieved successfully");
+        return responseEntity;
     }
 
     @Override

@@ -27,6 +27,20 @@ public class ResponseEntity<T> {
         return responseEntity;
     }
 
+    public static <T> ResponseEntity<T> empty(T data, String message){
+        ResponseEntity<T> responseEntity = new ResponseEntity<>();
+        responseEntity.setData(data);
+        responseEntity.setMessage(responseEntity.new Message(message, "SUCCESS", "201"));
+        return responseEntity;
+    }
+
+    public static <T> ResponseEntity<T> bad(T data, String message){
+        ResponseEntity<T> responseEntity = new ResponseEntity<>();
+        responseEntity.setData(data);
+        responseEntity.setMessage(responseEntity.new Message(message, "ERROR", "400"));
+        return responseEntity;
+    }
+
     public static <T> ResponseEntity<T> forbidden(T data, String message){
         ResponseEntity<T> responseEntity = new ResponseEntity<>();
         responseEntity.setData(data);
